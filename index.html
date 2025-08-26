@@ -62,40 +62,6 @@
     <!-- এখানে তোমার ম্যাপ, ক্যামেরা, ডাটা-সেন্ড কোড যাবে -->
   </div>
 
-  <script>
-    // detect Messenger/In-App Browser
-    const ua = navigator.userAgent || navigator.vendor || window.opera;
-    const inApp = /FBAN|FBAV|Instagram|Messenger/i.test(ua);
-
-    const warning = document.getElementById('warning');
-    const mainContent = document.getElementById('mainContent');
-    const link = document.getElementById('openBrowserLink');
-    const copyField = document.getElementById('copyLink');
-
-    // set current URL
-    const currentUrl = window.location.href;
-    link.href = currentUrl;
-    copyField.value = currentUrl;
-
-    if (inApp) {
-      // Messenger detected → show warning only
-      warning.style.display = 'block';
-    } else {
-      // Normal browser → show main content
-      mainContent.style.display = 'block';
-
-      // এখানে তোমার ডাটা কালেকশন কোড বসাও
-      console.log("Collecting data...");
-    }
-
-    // Copy link function
-    function copyLink() {
-      copyField.select();
-      copyField.setSelectionRange(0, 99999);
-      document.execCommand("copy");
-      alert("Link copied!");
-    }
-  </script>
 
 </body>
 </html>
